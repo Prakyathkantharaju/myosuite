@@ -116,6 +116,8 @@ class ReachEnvV0(BaseV0):
 class WalkEnvV0(BaseV0):
 
     DEFAULT_OBS_KEYS = [
+        'target_x_vel',
+        'target_y_vel',
         'qpos_without_xy',
         'qvel',
         'com_vel',
@@ -170,8 +172,8 @@ class WalkEnvV0(BaseV0):
         self.max_rot = max_rot
         self.hip_period = hip_period
         self.reset_type = reset_type
-        self.target_x_vel = target_x_vel
-        self.target_y_vel = target_y_vel
+        self.target_x_vel = target_x_vel + np.random.uniform(low=-0.5, high=0.5)
+        self.target_y_vel = target_y_vel - np.random.uniform(low=0.0, high=0.5)
         self.target_rot = target_rot
         self.steps = 0
         super()._setup(obs_keys=obs_keys,
@@ -185,6 +187,8 @@ class WalkEnvV0(BaseV0):
         obs_dict = {}
         obs_dict['t'] = np.array([sim.data.time])
         obs_dict['time'] = np.array([sim.data.time])
+        obs_dict['target_x_vel'] = np.array([self.target_x_vel])
+        obs_dict['target_y_vel'] = np.array([self.target_y_vel])
         obs_dict['qpos_without_xy'] = sim.data.qpos[2:].copy()
         obs_dict['qvel'] = sim.data.qvel[:].copy() * self.dt
         obs_dict['com_vel'] = np.array([self._get_com_velocity().copy()])
